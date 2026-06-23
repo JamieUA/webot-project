@@ -1,0 +1,87 @@
+#VRML_SIM R2025a utf8
+# license: Copyright Angel Ayala. Licensed for research use purpose only.
+# license url: https://www.github.com/angel-ayala
+# tags: static
+# Transparent images sequence to simulate a fire with smoke event.
+# Static version for Webots R2025+ (no Lua/JavaScript templating)
+
+PROTO FireSmoke [
+  field SFString name "FireSmoke"     # Is `Solid.name`.
+  field SFVec3f translation 0 0.5 0   # Is `Transform.translation`.
+  field SFRotation rotation 0 0 0 0   # Is `Transform.rotation`.
+  field SFFloat fireHeight 1          # Is `Cylinder.height`.
+  field SFFloat fireRadius 0.2        # Is `Cylinder.radius`.
+  field SFString controller "fire_movement"  # Is `Robot.controller`.
+  field MFString controllerArgs ""    # Is `Robot.controllerArgs`.
+  field SFString customData ""        # Is `Robot.customData`.
+  field SFBool synchronization TRUE   # Is `Robot.synchronization`
+  # field SFBool showSmoke TRUE
+]
+{
+  # Static calculations (no templating):
+  # smokeHeight = min(25, fireHeight * 1.5) → using fireHeight=1 → 1.5
+  # smoke radius factor = fireRadius * 1.25 → 0.25
+Robot {
+  name IS name
+  translation IS translation
+  rotation IS rotation
+  controller IS controller
+  controllerArgs IS controllerArgs
+  customData IS customData
+  synchronization IS synchronization
+  children [
+    Display {
+      translation 0 0 0.5  # Adjusted slightly; was smokeHeight * 0.3333 ≈ 0.5
+      children [
+        DEF SMOKE_SHAPE Shape {
+          appearance PBRAppearance {
+            baseColorMap ImageTexture {
+              repeatS FALSE
+              repeatT FALSE
+            }
+            roughness 1
+            metalness 0
+          }
+          geometry Cylinder {
+            bottom FALSE
+            height 1.5              # static: fireHeight * 1.5 (capped at 25)
+            radius 0.25             # static: fireRadius * 1.25
+            top FALSE
+            subdivision 8
+          }
+          castShadows FALSE
+        }
+      ]
+      name "smokeDisplay"
+      width 480
+      height 320
+    }
+    Display {
+      children [
+        DEF FIRE_SHAPE Shape {
+          appearance PBRAppearance {
+            baseColorMap ImageTexture {
+              repeatS FALSE
+              repeatT FALSE
+            }
+            roughness 1
+            metalness 0
+            IBLStrength 6
+          }
+          geometry Cylinder {
+            bottom FALSE
+            height IS fireHeight
+            radius IS fireRadius
+            top FALSE
+            subdivision 8
+          }
+          castShadows FALSE
+        }
+      ]
+      name "fireDisplay"
+      width 320
+      height 320
+    }
+  ]
+}
+}
