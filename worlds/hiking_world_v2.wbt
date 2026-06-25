@@ -1,0 +1,268 @@
+#VRML_SIM R2023b utf8
+
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023b/projects/objects/floors/protos/Floor.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023b/projects/objects/trees/protos/Forest.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023b/projects/robots/dji/mavic/protos/Mavic2Pro.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023b/projects/objects/backgrounds/protos/TexturedBackground.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023b/projects/objects/backgrounds/protos/TexturedBackgroundLight.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023b/projects/humans/pedestrian/protos/Pedestrian.proto"
+EXTERNPROTO "../protos/RadioController.proto"
+
+DEF World WorldInfo {
+  title "Hiking Group Monitoring"
+  basicTimeStep 8
+  defaultDamping Damping {
+    linear 0.5
+    angular 0.5
+  }
+}
+Viewpoint {
+  orientation -0.5773502691896258 0.5773502691896258 0.5773502691896258 2.0944
+  position 0 -10 50
+  near 0.2
+  follow "Mavic 2 PRO"
+  followType "None"
+}
+TexturedBackground {
+  texture "noon_park_empty"
+}
+TexturedBackgroundLight {
+  texture "noon_park_empty"
+}
+DEF FlightArea Floor {
+  translation 0 0 -0.001
+  rotation 0 0 1 1.5707963267948966
+  size 200 200
+  tileSize 1 1
+  appearance PBRAppearance {
+    baseColorMap ImageTexture {
+      url [
+        "https://raw.githubusercontent.com/cyberbotics/webots/R2023b/projects/default/worlds/textures/dry_grass.jpg"
+      ]
+    }
+    roughness 1
+    metalness 0
+  }
+}
+DEF ForestArea Forest {
+  rotation 0 0 1 -1.5707963267948966
+  shape [
+    -100 -100
+    100 -100
+    100 -20
+    -100 -20
+  ]
+  density 0.4
+  randomSeed 5
+  maxHeight 12
+  minHeight 4
+}
+DEF ForestArea2 Forest {
+  rotation 0 0 1 -1.5707963267948966
+  shape [
+    -100 20
+    100 20
+    100 100
+    -100 100
+  ]
+  density 0.4
+  randomSeed 7
+  maxHeight 12
+  minHeight 4
+}
+DEF Drone Mavic2Pro {
+  translation 0 0 0.5
+  rotation 0 0 1 1.5708
+  controller "drone_controller"
+  bodySlot [
+    Receiver {
+      name "ActionReceiver"
+      channel 6
+    }
+    Emitter {
+      name "StateEmitter"
+      channel 4
+    }
+    DistanceSensor {
+      translation 0.06 0.0332 0.003
+      rotation 1 0 0 1.5708
+      name "front left dist sonar"
+      lookupTable [
+        0.5 50 0
+        20 2000 0
+        40 4000 0.1
+      ]
+      type "sonar"
+    }
+    DistanceSensor {
+      translation 0.06 -0.033 0.003
+      rotation 1 0 0 1.5708
+      name "front right dist sonar"
+      lookupTable [
+        0.5 50 0
+        20 2000 0
+        40 4000 0.1
+      ]
+      type "sonar"
+    }
+    DistanceSensor {
+      translation -0.1364 0 -0.011
+      rotation 0 -1 0 3.14159
+      children [
+        DEF DIST_SENSOR Pose {
+          rotation 0 0 -0.9999999999999999 1.5707953071795862
+          children [
+            Shape {
+              appearance PBRAppearance {
+                baseColor 0.5 0.5 0.5
+                roughness 0.8
+                metalness 0
+              }
+              geometry Cylinder {
+                height 0.004
+                radius 0.0035
+              }
+            }
+          ]
+        }
+      ]
+      name "rear top dist sonar"
+      lookupTable [
+        0.5 50 0
+        16 1600 0
+        32 3200 0.1
+      ]
+      type "sonar"
+    }
+    DistanceSensor {
+      translation -0.1343 0 -0.044
+      rotation 0 -1 0 3.14159
+      children [
+        USE DIST_SENSOR
+      ]
+      name "rear bottom dist sonar"
+      lookupTable [
+        0.5 50 0
+        16 1600 0
+        32 3200 0.1
+      ]
+      type "sonar"
+    }
+    DistanceSensor {
+      translation -0.1309 0.016 -0.003
+      rotation 0 0 1 1.5708
+      children [
+        USE DIST_SENSOR
+      ]
+      name "left side dist sonar"
+      lookupTable [
+        0.5 50 0
+        10 1000 0
+      ]
+      type "sonar"
+    }
+    DistanceSensor {
+      translation -0.1309 -0.016 -0.003
+      rotation 0.7071067811864082 -0.7071067811864082 -6.276108057863702e-07 -3.1415853071795863
+      children [
+        USE DIST_SENSOR
+      ]
+      name "right side dist sonar"
+      lookupTable [
+        0.5 50 0
+        10 1000 0
+      ]
+      type "sonar"
+    }
+    DistanceSensor {
+      translation -0.0255 0 -0.0519
+      rotation 0.5773509358537164 -0.5773479358540498 -0.5773519358536053 -2.0943853071795866
+      name "down front dist sonar"
+      lookupTable [
+        0.5 50 0
+        11 1100 0
+        22 2200 0.1
+      ]
+      type "sonar"
+    }
+    DistanceSensor {
+      translation -0.1123 0 -0.0519
+      rotation 0.5773509358537164 -0.5773479358540498 -0.5773519358536053 -2.0943853071795866
+      name "down back dist sonar"
+      lookupTable [
+        0.5 50 0
+        11 1100 0
+        22 2200 0.1
+      ]
+      type "sonar"
+    }
+    DistanceSensor {
+      translation -0.026 0 0.02
+      rotation 0 1 0 -1.5707953071795862
+      name "top dist infrared"
+      lookupTable [
+        0.1 10 0
+        8 800 0
+      ]
+      type "infra-red"
+    }
+  ]
+  cameraSlot [
+    Camera {
+      rotation 0 1 0 0.3490659
+      width 400
+      height 240
+    }
+  ]
+}
+RadioController {
+  translation 0 -5 1.0
+  rotation -0.5773509358554485 0.5773489358556708 -0.5773509358554485 -2.094395307179586
+  controller "<extern>"
+  supervisor TRUE
+}
+DEF HIKER1 Pedestrian {
+  translation 5 0 1.27
+  rotation 0 0 1 0
+  name "hiker_alice"
+  shirtColor 0.2 0.6 0.9
+  pantsColor 0.1 0.3 0.6
+  controller "pedestrian_controller"
+  controllerArgs ["alice"]
+}
+DEF HIKER2 Pedestrian {
+  translation 7 2 1.27
+  rotation 0 0 1 0
+  name "hiker_bob"
+  shirtColor 0.9 0.3 0.1
+  pantsColor 0.2 0.2 0.4
+  controller "pedestrian_controller"
+  controllerArgs ["bob"]
+}
+DEF HIKER3 Pedestrian {
+  translation 4 -2 1.27
+  rotation 0 0 1 0
+  name "hiker_charlie"
+  shirtColor 0.1 0.7 0.3
+  pantsColor 0.3 0.2 0.1
+  controller "pedestrian_controller"
+  controllerArgs ["charlie"]
+}
+DEF HIKER4 Pedestrian {
+  translation 6 -3 1.27
+  rotation 0 0 1 0
+  name "hiker_diana"
+  shirtColor 0.9 0.7 0.1
+  pantsColor 0.2 0.2 0.5
+  controller "pedestrian_controller"
+  controllerArgs ["diana"]
+}
+DEF HIKER5 Pedestrian {
+  translation 3 3 1.27
+  rotation 0 0 1 0
+  name "hiker_eve"
+  shirtColor 0.8 0.2 0.7
+  pantsColor 0.1 0.1 0.3
+  controller "pedestrian_controller"
+  controllerArgs ["eve"]
+}

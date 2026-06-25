@@ -1,0 +1,8 @@
+numpy
+gym
+ultralytics
+openai-whisper
+sounddevice
+anthropic
+simple-pid
+opencv-python

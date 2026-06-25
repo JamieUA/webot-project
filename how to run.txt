@@ -1,0 +1,32 @@
+go into worlds/forest_tower.wbt
+open it. it will open webots automatically
+open a cmd window and go to C:\Users\admin\webots-projects\gym-webots-drone-main>
+run python webots_drone\webots_simulation.py
+
+these are the commands: forward/backward/left/right/up/down/turn left/turn right/scan/stop/land
+
+
+
+
+python webots_drone\webots_simulation.py
+
+
+ DRONE CONTROL
+====================================================
+  KEYBOARD:
+    Arrows  — move forward/backward/left/right
+    W / S   — altitude up / down
+    A / D   — rotate left / right
+    Q       — quit
+  VOICE COMMANDS:
+    'forward' 'back' 'go left' 'go right'
+    'up' 'down' 'turn left' 'turn right'
+    'scan'   — autonomous 360° search
+    'follow' — lock onto detected person
+    'manual' — return to manual control
+    'ai on'  — activate Claude AI brain
+    'ai off' — deactivate Claude AI brain
+    'stop'   — hover in place
+====================================================
+
+Simulation is running! Use W to take off.
