@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """
-webots_simulation.py — Main drone simulation controller.
+webots_simulation.py — Main drone simulation controller (HIKING SCENARIO).
 Integrates: keyboard, voice, YOLOv8 detection, follow mode,
             autonomous scan mode, Claude AI brain, HUD overlay.
 
@@ -266,18 +266,24 @@ def run(controller, show=True, **kwargs):
     import cv2
     import datetime
 
-    from follower        import PersonFollower
-    from voice_commander import VoiceCommander
-    from detector        import PersonDetector
-    from scan_mode       import ScanMode
-    from hud_overlay     import HUD
-    from claude_brain    import ClaudeBrain
+    from webots_drone.follower import PersonFollower
+    from webots_drone.voice_commander import VoiceCommander
+    from webots_drone.detector import PersonDetector
+    from webots_drone.scan_mode import ScanMode
+    from webots_drone.hud_overlay import HUD
+    from webots_drone.claude_brain import ClaudeBrain
     from webots_drone.target import VirtualTarget
 
     # ------------------------------------------------------------------
-    ANTHROPIC_API_KEY = ""
+    ANTHROPIC_API_KEY = os.environ.get('ANTHROPIC_API_KEY', '')
     USE_CLAUDE_BRAIN  = True
     # ------------------------------------------------------------------
+
+    print("\n" + "=" * 60)
+    print("🚁 HIKING DRONE SIMULATION - Webots Integration")
+    print("=" * 60)
+    print("Mode: Interactive Drone Control with Hiking Scenario")
+    print("=" * 60 + "\n")
 
     follower = PersonFollower(frame_w=400, frame_h=240)
     scanner  = ScanMode()
@@ -286,6 +292,7 @@ def run(controller, show=True, **kwargs):
 
     voice = VoiceCommander()
     voice.start()
+    print("[Voice] Voice commander started - listening for commands")
 
     # AI brain: loaded but OFF by default — say "ai on" or press B
     brain        = None
@@ -293,11 +300,12 @@ def run(controller, show=True, **kwargs):
     if USE_CLAUDE_BRAIN and ANTHROPIC_API_KEY and "YOUR-KEY" not in ANTHROPIC_API_KEY:
         try:
             brain = ClaudeBrain(api_key=ANTHROPIC_API_KEY)
-            print("[Brain] Ready — say 'ai on' or press B to activate.")
+            print("[Brain] ✓ Claude AI brain ready — say 'ai on' or press B to activate")
         except Exception as e:
-            print(f"[Brain] Failed to init: {e}")
+            print(f"[Brain] ✗ Failed to initialize: {e}")
     else:
-        print("[Brain] No API key set — AI brain disabled.")
+        print("[Brain] ⊘ No API key set — AI brain disabled")
+        print("       Set ANTHROPIC_API_KEY environment variable to enable")
 
     print_control_keys()
     kb = controller.get_kb_capturer()
@@ -336,7 +344,7 @@ def run(controller, show=True, **kwargs):
 
     state = controller.get_data()
 
-    print('Simulation running! Click the 3D window then press W to take off.\n')
+    print('\n✓ Simulation running! Click the 3D window then press W to take off.\n')
 
     # ==================================================================
     # MAIN LOOP
@@ -579,6 +587,7 @@ def run(controller, show=True, **kwargs):
     voice.stop()
     if show:
         cv2.destroyAllWindows()
+    print("\n🔴 Simulation ended")
 
 
 # ======================================================================
