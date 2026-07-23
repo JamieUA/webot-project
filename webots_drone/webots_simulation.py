@@ -281,7 +281,8 @@ def run(controller, show=True, **kwargs):
     from webots_drone.target import VirtualTarget
 
     # ------------------------------------------------------------------
-    ANTHROPIC_API_KEY = ""
+    api_key = os.getenv("ANTHROPIC_API_KEY")
+    
     USE_CLAUDE_BRAIN  = True
     # ------------------------------------------------------------------
 

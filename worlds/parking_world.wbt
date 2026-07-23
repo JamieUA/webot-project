@@ -1,0 +1,513 @@
+#VRML_SIM R2023b utf8
+
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023b/projects/objects/floors/protos/Floor.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023b/projects/objects/backgrounds/protos/TexturedBackground.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023b/projects/objects/backgrounds/protos/TexturedBackgroundLight.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023b/projects/robots/dji/mavic/protos/Mavic2Pro.proto"
+
+# Vehicle PROTOs
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023b/projects/vehicles/protos/bmw/BmwX5.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023b/projects/vehicles/protos/citroen/CitroenCZero.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023b/projects/vehicles/protos/toyota/ToyotaPrius.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023b/projects/vehicles/protos/lincoln/LincolnMKZ.proto"
+
+# Street, Traffic and Human PROTOs
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023b/projects/objects/traffic/protos/ParkingLines.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023b/projects/objects/traffic/protos/StreetLight.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023b/projects/objects/trees/protos/SimpleTree.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023b/projects/objects/buildings/protos/SmallResidentialBuilding.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023b/projects/objects/obstacles/protos/OilBarrel.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023b/projects/humans/pedestrian/protos/Pedestrian.proto"
+EXTERNPROTO "../protos/RadioController.proto"
+
+DEF World WorldInfo {
+  title "Autonomous Parking Guard Drone"
+  basicTimeStep 8
+  defaultDamping Damping {
+    linear 0.5
+    angular 0.5
+  }
+}
+Viewpoint {
+  orientation -0.5773502691896258 0.5773502691896258 0.5773502691896258 2.0944
+  position 0 -60 80
+  near 0.2
+  follow "Mavic 2 PRO"
+  followType "None"
+}
+TexturedBackground {
+  texture "noon_cloudy_countryside"
+}
+TexturedBackgroundLight {
+  texture "noon_cloudy_countryside"
+}
+
+# ─── GROUND ─────────────────────────────────────────────────────────────────
+DEF FlightArea Floor {
+  name "flight_area_floor"
+  translation 0 0 -0.005
+  size 120 100
+  appearance PBRAppearance {
+    baseColor 0.22 0.22 0.22
+    roughness 1
+    metalness 0
+  }
+}
+
+# Sidewalk strip — left side
+DEF Sidewalk Floor {
+  name "sidewalk_floor"
+  translation -52 0 0.001
+  size 8 100
+  appearance PBRAppearance {
+    baseColor 0.65 0.62 0.55
+    roughness 1
+    metalness 0
+  }
+}
+
+# Road strip — right side (entry/exit)
+DEF Road Floor {
+  name "road_floor"
+  translation 52 0 0.001
+  size 8 100
+  appearance PBRAppearance {
+    baseColor 0.28 0.28 0.28
+    roughness 1
+    metalness 0
+  }
+}
+
+# ─── ENTRANCE / EXIT GATES ──────────────────────────────────────────────────
+# Entrance barrier (top)
+DEF EntranceGate Solid {
+  translation 50 42 0.5
+  children [
+    Shape {
+      appearance PBRAppearance { baseColor 1 0.6 0 roughness 0.5 metalness 0.3 }
+      geometry Box { size 0.15 6 1 }
+    }
+  ]
+  name "entrance_gate"
+}
+DEF EntrancePost1 Solid {
+  translation 47 42 0.75
+  children [
+    Shape {
+      appearance PBRAppearance { baseColor 0.9 0.9 0.9 roughness 0.5 }
+      geometry Box { size 0.3 0.3 1.5 }
+    }
+  ]
+  name "entrance_post1"
+}
+DEF EntrancePost2 Solid {
+  translation 53 42 0.75
+  children [
+    Shape {
+      appearance PBRAppearance { baseColor 0.9 0.9 0.9 roughness 0.5 }
+      geometry Box { size 0.3 0.3 1.5 }
+    }
+  ]
+  name "entrance_post2"
+}
+DEF EntranceSign Solid {
+  translation 50 44 2.0
+  children [
+    Shape {
+      appearance PBRAppearance { baseColor 0.0 0.5 0.0 }
+      geometry Box { size 4 0.1 1 }
+    }
+  ]
+  name "entrance_sign"
+}
+
+# Exit barrier (bottom)
+DEF ExitGate Solid {
+  translation 50 -42 0.5
+  children [
+    Shape {
+      appearance PBRAppearance { baseColor 1 0.2 0.2 roughness 0.5 metalness 0.3 }
+      geometry Box { size 0.15 6 1 }
+    }
+  ]
+  name "exit_gate"
+}
+DEF ExitPost1 Solid {
+  translation 47 -42 0.75
+  children [
+    Shape {
+      appearance PBRAppearance { baseColor 0.9 0.9 0.9 roughness 0.5 }
+      geometry Box { size 0.3 0.3 1.5 }
+    }
+  ]
+  name "exit_post1"
+}
+DEF ExitPost2 Solid {
+  translation 53 -42 0.75
+  children [
+    Shape {
+      appearance PBRAppearance { baseColor 0.9 0.9 0.9 roughness 0.5 }
+      geometry Box { size 0.3 0.3 1.5 }
+    }
+  ]
+  name "exit_post2"
+}
+
+# ─── PARKING LINES — Row A top (Y=+28), Row B mid (Y=0), Row C bot (Y=-28) ──
+DEF LINES_A ParkingLines {
+  translation -15 28 0.002
+  rotation 0 0 1 1.5708
+}
+DEF LINES_B ParkingLines {
+  translation -15 0 0.002
+  rotation 0 0 1 1.5708
+}
+DEF LINES_C ParkingLines {
+  translation -15 -28 0.002
+  rotation 0 0 1 1.5708
+}
+
+# Slot X positions: -15, -10.5, -6, -1.5, 3, 7.5, 12, 16.5  (8 slots, 4.5m step)
+# ─── ROW A — 7 of 8 occupied (slot A6 empty) ────────────────────────────────
+DEF CAR_A1 BmwX5 {
+  name "car_a1"
+  translation -15 28 0.4
+  rotation 0 0 1 1.5708
+  color 0.1 0.1 0.8
+  controller "<none>"
+}
+DEF CAR_A2 ToyotaPrius {
+  name "car_a2"
+  translation -10.5 28 0.4
+  rotation 0 0 1 1.5708
+  color 0.9 0.9 0.9
+  controller "<none>"
+}
+DEF CAR_A3 CitroenCZero {
+  name "car_a3"
+  translation -6 28 0.4
+  rotation 0 0 1 1.5708
+  color 0.8 0.1 0.1
+  controller "<none>"
+}
+DEF CAR_A4 LincolnMKZ {
+  name "car_a4"
+  translation -1.5 28 0.4
+  rotation 0 0 1 1.5708
+  color 0.15 0.15 0.15
+  controller "<none>"
+}
+DEF CAR_A5 BmwX5 {
+  name "car_a5"
+  translation 3 28 0.4
+  rotation 0 0 1 1.5708
+  color 0.5 0.5 0.5
+  controller "<none>"
+}
+# A6 = EMPTY (slot at X=7.5, Y=28)
+DEF CAR_A7 ToyotaPrius {
+  name "car_a7"
+  translation 12 28 0.4
+  rotation 0 0 1 1.5708
+  color 0.1 0.6 0.1
+  controller "<none>"
+}
+DEF CAR_A8 CitroenCZero {
+  name "car_a8"
+  translation 16.5 28 0.4
+  rotation 0 0 1 1.5708
+  color 0.8 0.5 0.1
+  controller "<none>"
+}
+
+# ─── ROW B — 6 of 8 occupied (B3, B7 empty) ────────────────────────────────
+DEF CAR_B1 LincolnMKZ {
+  name "car_b1"
+  translation -15 0 0.4
+  rotation 0 0 1 1.5708
+  color 0.9 0.2 0.2
+  controller "<none>"
+}
+DEF CAR_B2 BmwX5 {
+  name "car_b2"
+  translation -10.5 0 0.4
+  rotation 0 0 1 1.5708
+  color 0.1 0.1 0.1
+  controller "<none>"
+}
+# B3 = EMPTY (X=-6)
+DEF CAR_B4 ToyotaPrius {
+  name "car_b4"
+  translation -1.5 0 0.4
+  rotation 0 0 1 1.5708
+  color 0.2 0.2 0.9
+  controller "<none>"
+}
+DEF CAR_B5 CitroenCZero {
+  name "car_b5"
+  translation 3 0 0.4
+  rotation 0 0 1 1.5708
+  color 0.85 0.85 0.85
+  controller "<none>"
+}
+DEF CAR_B6 BmwX5 {
+  name "car_b6"
+  translation 7.5 0 0.4
+  rotation 0 0 1 1.5708
+  color 0.4 0.2 0.6
+  controller "<none>"
+}
+# B7 = EMPTY (X=12)
+DEF CAR_B8 LincolnMKZ {
+  name "car_b8"
+  translation 16.5 0 0.4
+  rotation 0 0 1 1.5708
+  color 0.6 0.3 0.1
+  controller "<none>"
+}
+
+# ─── ROW C — fully occupied (8/8) ───────────────────────────────────────────
+DEF CAR_C1 ToyotaPrius {
+  name "car_c1"
+  translation -15 -28 0.4
+  rotation 0 0 1 1.5708
+  color 0.9 0.9 0.1
+  controller "<none>"
+}
+DEF CAR_C2 CitroenCZero {
+  name "car_c2"
+  translation -10.5 -28 0.4
+  rotation 0 0 1 1.5708
+  color 0.1 0.5 0.9
+  controller "<none>"
+}
+DEF CAR_C3 BmwX5 {
+  name "car_c3"
+  translation -6 -28 0.4
+  rotation 0 0 1 1.5708
+  color 0.8 0.8 0.8
+  controller "<none>"
+}
+DEF CAR_C4 LincolnMKZ {
+  name "car_c4"
+  translation -1.5 -28 0.4
+  rotation 0 0 1 1.5708
+  color 0.2 0.2 0.2
+  controller "<none>"
+}
+DEF CAR_C5 ToyotaPrius {
+  name "car_c5"
+  translation 3 -28 0.4
+  rotation 0 0 1 1.5708
+  color 0.9 0.4 0.4
+  controller "<none>"
+}
+DEF CAR_C6 CitroenCZero {
+  name "car_c6"
+  translation 7.5 -28 0.4
+  rotation 0 0 1 1.5708
+  color 0.3 0.7 0.3
+  controller "<none>"
+}
+DEF CAR_C7 BmwX5 {
+  name "car_c7"
+  translation 12 -28 0.4
+  rotation 0 0 1 1.5708
+  color 0.5 0.5 0.9
+  controller "<none>"
+}
+DEF CAR_C8 LincolnMKZ {
+  name "car_c8"
+  translation 16.5 -28 0.4
+  rotation 0 0 1 1.5708
+  color 0.7 0.7 0.1
+  controller "<none>"
+}
+
+# ─── THEFT CAR — moved by supervisor_controller ────────────────────────────
+DEF THEFT_CAR ToyotaPrius {
+  name "theft_car"
+  translation -1.5 0 0.4
+  rotation 0 0 1 1.5708
+  color 0.9 0.1 0.1
+  controller "<none>"
+}
+
+# ─── SECURITY OFFICE ────────────────────────────────────────────────────────
+DEF SecurityOffice SmallResidentialBuilding {
+  translation -45 35 0
+  rotation 0 0 1 1.5708
+}
+
+# ─── DRONE CHARGING PAD ─────────────────────────────────────────────────────
+DEF ChargingPad Solid {
+  translation 30 0 0.01
+  children [
+    Shape {
+      appearance PBRAppearance {
+        baseColor 0.1 0.1 0.1
+        roughness 0.8
+        emissiveColor 0 0.3 0.6
+      }
+      geometry Box { size 3 3 0.02 }
+    }
+  ]
+  name "charging_pad"
+}
+DEF ChargingH Solid {
+  translation 30 0 0.04
+  children [
+    Shape {
+      appearance PBRAppearance { baseColor 1 1 1 }
+      geometry Box { size 2.5 0.2 0.01 }
+    }
+  ]
+  name "charging_h"
+}
+
+# ─── STREET LIGHTS ──────────────────────────────────────────────────────────
+DEF LIGHT1 StreetLight { name "light1" translation -20 38 0  rotation 0 0 1 0 }
+DEF LIGHT2 StreetLight { name "light2" translation  10 38 0  rotation 0 0 1 0 }
+DEF LIGHT3 StreetLight { name "light3" translation -20 -38 0 rotation 0 0 1 3.14159 }
+DEF LIGHT4 StreetLight { name "light4" translation  10 -38 0 rotation 0 0 1 3.14159 }
+DEF LIGHT5 StreetLight { name "light5" translation -40 10 0  rotation 0 0 1 1.5708 }
+DEF LIGHT6 StreetLight { name "light6" translation -40 -10 0 rotation 0 0 1 1.5708 }
+
+# ─── TREES ──────────────────────────────────────────────────────────────────
+DEF TREE1 SimpleTree { translation -48 20 0  name "tree1" }
+DEF TREE2 SimpleTree { translation -48 0  0  name "tree2" }
+DEF TREE3 SimpleTree { translation -48 -20 0 name "tree3" }
+DEF TREE4 SimpleTree { translation -48 40 0  name "tree4" }
+DEF TREE5 SimpleTree { translation -48 -40 0 name "tree5" }
+DEF TREE6 SimpleTree { translation 25 42 0   name "tree6" }
+DEF TREE7 SimpleTree { translation 25 -42 0  name "tree7" }
+
+# ─── OBSTACLE BARRELS ───────────────────────────────────────────────────────
+DEF BARREL1 OilBarrel { translation 22 10 0.44  name "barrel1" }
+DEF BARREL2 OilBarrel { translation 22 -10 0.44 name "barrel2" }
+
+# ─── SUPERVISOR NODE ────────────────────────────────────────────────────────
+DEF ParkingSupervisor Robot {
+  translation 0 0 0
+  controller "supervisor_controller"
+  supervisor TRUE
+  children []
+  name "ParkingSupervisor"
+}
+
+# ─── DRONE ──────────────────────────────────────────────────────────────────
+DEF Drone Mavic2Pro {
+  translation 30 0 0.5
+  rotation 0 0 1 0
+  controller "drone_controller"
+  bodySlot [
+    Receiver {
+      name "ActionReceiver"
+      channel 6
+    }
+    Emitter {
+      name "StateEmitter"
+      channel 4
+    }
+    Emitter {
+      name "AlertEmitter"
+      channel 8
+    }
+    Receiver {
+      name "SupervisorReceiver"
+      channel 9
+    }
+    DistanceSensor {
+      translation 0.06 0.0332 0.003
+      rotation 1 0 0 1.5708
+      name "front left dist sonar"
+      lookupTable [0.5 50 0  20 2000 0  40 4000 0.1]
+      type "sonar"
+    }
+    DistanceSensor {
+      translation 0.06 -0.033 0.003
+      rotation 1 0 0 1.5708
+      name "front right dist sonar"
+      lookupTable [0.5 50 0  20 2000 0  40 4000 0.1]
+      type "sonar"
+    }
+    DistanceSensor {
+      translation -0.1364 0 -0.011
+      rotation 0 -1 0 3.14159
+      children [
+        DEF DIST_SENSOR Pose {
+          rotation 0 0 -0.9999999999999999 1.5707953071795862
+          children [
+            Shape {
+              appearance PBRAppearance { baseColor 0.5 0.5 0.5 roughness 0.8 metalness 0 }
+              geometry Cylinder { height 0.004 radius 0.0035 }
+            }
+          ]
+        }
+      ]
+      name "rear top dist sonar"
+      lookupTable [0.5 50 0  16 1600 0  32 3200 0.1]
+      type "sonar"
+    }
+    DistanceSensor {
+      translation -0.1343 0 -0.044
+      rotation 0 -1 0 3.14159
+      children [USE DIST_SENSOR]
+      name "rear bottom dist sonar"
+      lookupTable [0.5 50 0  16 1600 0  32 3200 0.1]
+      type "sonar"
+    }
+    DistanceSensor {
+      translation -0.1309 0.016 -0.003
+      rotation 0 0 1 1.5708
+      children [USE DIST_SENSOR]
+      name "left side dist sonar"
+      lookupTable [0.5 50 0  10 1000 0]
+      type "sonar"
+    }
+    DistanceSensor {
+      translation -0.1309 -0.016 -0.003
+      rotation 0.7071067811864082 -0.7071067811864082 0 -3.1415853071795863
+      children [USE DIST_SENSOR]
+      name "right side dist sonar"
+      lookupTable [0.5 50 0  10 1000 0]
+      type "sonar"
+    }
+    DistanceSensor {
+      translation -0.0255 0 -0.0519
+      rotation 0.5773509358537164 -0.5773479358540498 -0.5773519358536053 -2.0943853071795866
+      name "down front dist sonar"
+      lookupTable [0.5 50 0  11 1100 0  22 2200 0.1]
+      type "sonar"
+    }
+    DistanceSensor {
+      translation -0.1123 0 -0.0519
+      rotation 0.5773509358537164 -0.5773479358540498 -0.5773519358536053 -2.0943853071795866
+      name "down back dist sonar"
+      lookupTable [0.5 50 0  11 1100 0  22 2200 0.1]
+      type "sonar"
+    }
+    DistanceSensor {
+      translation -0.026 0 0.02
+      rotation 0 1 0 -1.5707953071795862
+      name "top dist infrared"
+      lookupTable [0.1 10 0  8 800 0]
+      type "infra-red"
+    }
+  ]
+  cameraSlot [
+    Camera {
+      rotation 0 1 0 1.5708
+      width 400
+      height 240
+    }
+  ]
+}
+
+# ─── RC CONTROLLER (extern) ─────────────────────────────────────────────────
+RadioController {
+  translation 30 -5 0.5
+  rotation -0.5773509358554485 0.5773489358556708 -0.5773509358554485 -2.094395307179586
+  controller "<extern>"
+  supervisor TRUE
+}
