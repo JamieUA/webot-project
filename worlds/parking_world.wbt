@@ -153,181 +153,198 @@ DEF ExitPost2 Solid {
   name "exit_post2"
 }
 
-# ─── PARKING LINES — Row A top (Y=+28), Row B mid (Y=0), Row C bot (Y=-28) ──
+# ─── PARKING LINES — Row A top (Y=15), Row B mid (Y=-2.5), Row C bot (Y=-20) ──
+# ParkingLines has a CORNER origin: the bay strip spans X in [Tx, Tx+width] and
+# Y in [Ty, Ty+carParkLength], where width = numberOfCarParks*carParkWidth.
+# With Tx=-15, carParkWidth=3.5 the 8 bay-center X values are
+#   -13.25, -9.75, -6.25, -2.75, 0.75, 4.25, 7.75, 11.25
+# and the bay-center Y is Ty + carParkLength/2  ->  A=18, B=0.5, C=-17.
 DEF LINES_A ParkingLines {
-  translation -15 28 0.002
-  rotation 0 0 1 1.5708
+  translation -15.0 15.0 0.002
+  numberOfCarParks 8
+  carParkWidth 3.5
+  carParkLength 6.0
 }
 DEF LINES_B ParkingLines {
-  translation -15 0 0.002
-  rotation 0 0 1 1.5708
+  translation -15.0 -2.5 0.002
+  numberOfCarParks 8
+  carParkWidth 3.5
+  carParkLength 6.0
 }
 DEF LINES_C ParkingLines {
-  translation -15 -28 0.002
-  rotation 0 0 1 1.5708
+  translation -15.0 -20.0 0.002
+  numberOfCarParks 8
+  carParkWidth 3.5
+  carParkLength 6.0
 }
 
-# Slot X positions: -15, -10.5, -6, -1.5, 3, 7.5, 12, 16.5  (8 slots, 4.5m step)
-# ─── ROW A — 7 of 8 occupied (slot A6 empty) ────────────────────────────────
+# NOTE ON CAR Y VALUES:
+# Webots car protos are anchored at the CENTER OF THE REAR AXLE (front axle sits
+# at +wheelbase in local X). Rotated +90° about Z, the body extends toward +Y, so
+# a car placed at the bay-center Y would poke out the front of the spot. To center
+# the BODY in the bay we pull each car back by half its wheelbase:
+#   BmwX5 1.50   ToyotaPrius 1.40   LincolnMKZ 1.47   CitroenCZero 1.28
+# Bay X centers: -13.25, -9.75, -6.25, -2.75, 0.75, 4.25, 7.75, 11.25
+# ─── ROW A — 7 of 8 occupied (slot A6 empty), bay-center Y = 18 ─────────────
 DEF CAR_A1 BmwX5 {
   name "car_a1"
-  translation -15 28 0.4
+  translation -13.25 16.5 0.4
   rotation 0 0 1 1.5708
   color 0.1 0.1 0.8
   controller "<none>"
 }
 DEF CAR_A2 ToyotaPrius {
   name "car_a2"
-  translation -10.5 28 0.4
+  translation -9.75 16.6 0.4
   rotation 0 0 1 1.5708
   color 0.9 0.9 0.9
   controller "<none>"
 }
 DEF CAR_A3 CitroenCZero {
   name "car_a3"
-  translation -6 28 0.4
+  translation -6.25 16.72 0.4
   rotation 0 0 1 1.5708
   color 0.8 0.1 0.1
   controller "<none>"
 }
 DEF CAR_A4 LincolnMKZ {
   name "car_a4"
-  translation -1.5 28 0.4
+  translation -2.75 16.53 0.4
   rotation 0 0 1 1.5708
   color 0.15 0.15 0.15
   controller "<none>"
 }
 DEF CAR_A5 BmwX5 {
   name "car_a5"
-  translation 3 28 0.4
+  translation 0.75 16.5 0.4
   rotation 0 0 1 1.5708
   color 0.5 0.5 0.5
   controller "<none>"
 }
-# A6 = EMPTY (slot at X=7.5, Y=28)
+# A6 = EMPTY (slot at X=4.25, Y=18)
 DEF CAR_A7 ToyotaPrius {
   name "car_a7"
-  translation 12 28 0.4
+  translation 7.75 16.6 0.4
   rotation 0 0 1 1.5708
   color 0.1 0.6 0.1
   controller "<none>"
 }
 DEF CAR_A8 CitroenCZero {
   name "car_a8"
-  translation 16.5 28 0.4
+  translation 11.25 16.72 0.4
   rotation 0 0 1 1.5708
   color 0.8 0.5 0.1
   controller "<none>"
 }
 
-# ─── ROW B — 6 of 8 occupied (B3, B7 empty) ────────────────────────────────
+# ─── ROW B — 6 of 8 occupied (B3, B7 empty), bay-center Y = 0.5 ─────────────
 DEF CAR_B1 LincolnMKZ {
   name "car_b1"
-  translation -15 0 0.4
+  translation -13.25 -0.97 0.4
   rotation 0 0 1 1.5708
   color 0.9 0.2 0.2
   controller "<none>"
 }
 DEF CAR_B2 BmwX5 {
   name "car_b2"
-  translation -10.5 0 0.4
+  translation -9.75 -1.0 0.4
   rotation 0 0 1 1.5708
   color 0.1 0.1 0.1
   controller "<none>"
 }
-# B3 = EMPTY (X=-6)
+# B3 = EMPTY (X=-6.25)
 DEF CAR_B4 ToyotaPrius {
   name "car_b4"
-  translation -1.5 0 0.4
+  translation -2.75 -0.9 0.4
   rotation 0 0 1 1.5708
   color 0.2 0.2 0.9
   controller "<none>"
 }
 DEF CAR_B5 CitroenCZero {
   name "car_b5"
-  translation 3 0 0.4
+  translation 0.75 -0.78 0.4
   rotation 0 0 1 1.5708
   color 0.85 0.85 0.85
   controller "<none>"
 }
 DEF CAR_B6 BmwX5 {
   name "car_b6"
-  translation 7.5 0 0.4
+  translation 4.25 -1.0 0.4
   rotation 0 0 1 1.5708
   color 0.4 0.2 0.6
   controller "<none>"
 }
-# B7 = EMPTY (X=12)
+# B7 = EMPTY (X=7.75)
 DEF CAR_B8 LincolnMKZ {
   name "car_b8"
-  translation 16.5 0 0.4
+  translation 11.25 -0.97 0.4
   rotation 0 0 1 1.5708
   color 0.6 0.3 0.1
   controller "<none>"
 }
 
-# ─── ROW C — fully occupied (8/8) ───────────────────────────────────────────
+# ─── ROW C — fully occupied (8/8), bay-center Y = -17 ───────────────────────
 DEF CAR_C1 ToyotaPrius {
   name "car_c1"
-  translation -15 -28 0.4
+  translation -13.25 -18.4 0.4
   rotation 0 0 1 1.5708
   color 0.9 0.9 0.1
   controller "<none>"
 }
 DEF CAR_C2 CitroenCZero {
   name "car_c2"
-  translation -10.5 -28 0.4
+  translation -9.75 -18.28 0.4
   rotation 0 0 1 1.5708
   color 0.1 0.5 0.9
   controller "<none>"
 }
 DEF CAR_C3 BmwX5 {
   name "car_c3"
-  translation -6 -28 0.4
+  translation -6.25 -18.5 0.4
   rotation 0 0 1 1.5708
   color 0.8 0.8 0.8
   controller "<none>"
 }
 DEF CAR_C4 LincolnMKZ {
   name "car_c4"
-  translation -1.5 -28 0.4
+  translation -2.75 -18.47 0.4
   rotation 0 0 1 1.5708
   color 0.2 0.2 0.2
   controller "<none>"
 }
 DEF CAR_C5 ToyotaPrius {
   name "car_c5"
-  translation 3 -28 0.4
+  translation 0.75 -18.4 0.4
   rotation 0 0 1 1.5708
   color 0.9 0.4 0.4
   controller "<none>"
 }
 DEF CAR_C6 CitroenCZero {
   name "car_c6"
-  translation 7.5 -28 0.4
+  translation 4.25 -18.28 0.4
   rotation 0 0 1 1.5708
   color 0.3 0.7 0.3
   controller "<none>"
 }
 DEF CAR_C7 BmwX5 {
   name "car_c7"
-  translation 12 -28 0.4
+  translation 7.75 -18.5 0.4
   rotation 0 0 1 1.5708
   color 0.5 0.5 0.9
   controller "<none>"
 }
 DEF CAR_C8 LincolnMKZ {
   name "car_c8"
-  translation 16.5 -28 0.4
+  translation 11.25 -18.47 0.4
   rotation 0 0 1 1.5708
   color 0.7 0.7 0.1
   controller "<none>"
 }
 
-# ─── THEFT CAR — moved by supervisor_controller ────────────────────────────
+# ─── THEFT CAR — moved by supervisor_controller (starts centered in bay B4) ─
 DEF THEFT_CAR ToyotaPrius {
   name "theft_car"
-  translation -1.5 0 0.4
+  translation -2.75 -0.9 0.4
   rotation 0 0 1 1.5708
   color 0.9 0.1 0.1
   controller "<none>"
@@ -391,7 +408,12 @@ DEF ParkingSupervisor Robot {
   translation 0 0 0
   controller "supervisor_controller"
   supervisor TRUE
-  children []
+  children [
+    Emitter {
+      name "emitter"
+      channel 9
+    }
+  ]
   name "ParkingSupervisor"
 }
 
